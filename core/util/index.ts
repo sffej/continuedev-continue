@@ -2,19 +2,19 @@ export function removeQuotesAndEscapes(output: string): string {
   output = output.trim();
 
   // Replace smart quotes
-  output = output.replace("“", "\"");
-  output = output.replace("”", "\"");
+  output = output.replace("“", '"');
+  output = output.replace("”", '"');
   output = output.replace("‘", "'");
   output = output.replace("’", "'");
 
   // Remove escapes
-  output = output.replace("\\\"", "\"");
+  output = output.replace('\\"', '"');
   output = output.replace("\\'", "'");
   output = output.replace("\\n", "\n");
   output = output.replace("\\t", "\t");
   output = output.replace("\\\\", "\\");
   while (
-    (output.startsWith("\"") && output.endsWith("\"")) ||
+    (output.startsWith('"') && output.endsWith('"')) ||
     (output.startsWith("'") && output.endsWith("'"))
   ) {
     output = output.slice(1, -1);
@@ -191,8 +191,8 @@ export function getRelativePath(
   return splitPath(filepath).pop() ?? ""; // If the file is not in any of the workspaces, return the plain filename
 }
 
-export function getMarkdownLanguageTagForFile(filepath: string): string {
-  const ext = filepath.split(".").pop();
+export function getMarkdownLanguageTagForFile(fileUri: string): string {
+  const ext = fileUri.split(".").pop();
   switch (ext) {
     case "py":
       return "python";

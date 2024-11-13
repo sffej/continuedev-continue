@@ -220,7 +220,7 @@ class ContinuePluginStartupActivity : StartupActivity, Disposable, DumbAware {
                     .filter { modulePath -> allModulePaths.none { it != modulePath && modulePath.startsWith(it) } }
                     .map { it.toString() }
 
-                pluginService.workspacePaths = topLevelModulePaths.toTypedArray()
+                pluginService.workspaceUris = topLevelModulePaths.toTypedArray()
             }
 
             EditorFactory.getInstance().eventMulticaster.addSelectionListener(

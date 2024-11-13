@@ -42,8 +42,8 @@ export class ReverseMessageIde {
       return this.ide.getLastModified(data.files);
     });
 
-    this.on("getGitRootPath", (data) => {
-      return this.ide.getGitRootPath(data.dir);
+    this.on("getGitRootUri", (data) => {
+      return this.ide.getGitRootUri(data.dir);
     });
 
     this.on("listDir", (data) => {

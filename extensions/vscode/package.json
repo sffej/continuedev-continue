@@ -640,6 +640,7 @@
     "systeminformation": "^5.22.10",
     "tailwindcss": "^3.3.2",
     "undici": "^6.2.0",
+    "uri-js": "^4.4.1",
     "uuid": "^9.0.1",
     "uuidv4": "^6.2.13",
     "vectordb": "^0.4.20",

@@ -144,7 +144,7 @@ class ContinueBrowser(val project: Project, url: String) {
 
                         val jsonData = mutableMapOf(
                             "windowId" to continuePluginService.windowId,
-                            "workspacePaths" to continuePluginService.workspacePaths,
+                            "workspaceUris" to continuePluginService.workspaceUris,
                             "vscMachineId" to getMachineUniqueID(),
                             "vscMediaUrl" to "http://continue",
                         )

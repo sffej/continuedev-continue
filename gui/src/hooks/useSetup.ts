@@ -72,7 +72,7 @@ function useSetup(dispatch: Dispatch<any>) {
       const msg = result.content;
       (window as any).windowId = msg.windowId;
       (window as any).serverUrl = msg.serverUrl;
-      (window as any).workspacePaths = msg.workspacePaths;
+      (window as any).workspaceUris = msg.workspaceUris;
       (window as any).vscMachineId = msg.vscMachineId;
       (window as any).vscMediaUrl = msg.vscMediaUrl;
       dispatch(setVscMachineId(msg.vscMachineId));

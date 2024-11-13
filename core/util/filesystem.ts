@@ -20,7 +20,7 @@ import { GetGhTokenArgs } from "../protocol/ide.js";
 import { getContinueGlobalPath } from "./paths.js";
 
 class FileSystemIde implements IDE {
-  constructor(private readonly workspaceDir: string) { }
+  constructor(private readonly workspaceDir: string) {}
   showToast(
     type: ToastType,
     message: string,
@@ -67,7 +67,7 @@ class FileSystemIde implements IDE {
     }
     return result;
   }
-  getGitRootPath(dir: string): Promise<string | undefined> {
+  getGitRootUri(dir: string): Promise<string | undefined> {
     return Promise.resolve(dir);
   }
   async listDir(dir: string): Promise<[string, FileType][]> {

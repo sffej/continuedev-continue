@@ -31,12 +31,12 @@ export const HistoryHeader = () => {
           <span className="m-2 inline-block text-base font-bold">Chat</span>
         </div>
       </div>
-      {/* {workspacePaths && workspacePaths.length > 0 && (
+      {/* {workspaceUris && workspaceUris.length > 0 && (
       <CheckDiv
         checked={filteringByWorkspace}
         onClick={() => setFilteringByWorkspace((prev) => !prev)}
         title={`Show only sessions from ${lastPartOfPath(
-          workspacePaths[workspacePaths.length - 1]
+          workspaceUris[workspaceUris.length - 1]
         )}/`}
       />
     )} */}

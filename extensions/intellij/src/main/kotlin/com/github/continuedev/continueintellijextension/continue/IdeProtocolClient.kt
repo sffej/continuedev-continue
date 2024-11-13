@@ -410,7 +410,7 @@ class IdeProtocolClient(
                         respond(files)
                     }
 
-                    "getGitRootPath" -> {
+                    "getGitRootUri" -> {
                         val data = data as Map<String, Any>
                         val directory = data["dir"] as String
                         val builder = ProcessBuilder("git", "rev-parse", "--show-toplevel")
@@ -945,7 +945,7 @@ class IdeProtocolClient(
     }
 
     private fun workspaceDirectories(): Array<String> {
-        val dirs = this.continuePluginService.workspacePaths
+        val dirs = this.continuePluginService.workspaceUris
         if (dirs?.isNotEmpty() == true) {
             return dirs
         }

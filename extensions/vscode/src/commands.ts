@@ -33,8 +33,6 @@ import { VerticalDiffManager } from "./diff/vertical/manager";
 import EditDecorationManager from "./quickEdit/EditDecorationManager";
 import { QuickEdit, QuickEditShowParams } from "./quickEdit/QuickEditQuickPick";
 import { Battery } from "./util/battery";
-import { getFullyQualifiedPath } from "./util/util";
-import { uriFromFilePath } from "./util/vscode";
 import { VsCodeIde } from "./VsCodeIde";
 
 import type { VsCodeWebviewProtocol } from "./webviewProtocol";
@@ -72,7 +70,7 @@ function addCodeToContextFromRange(
   }
 
   const rangeInFileWithContents = {
-    filepath: document.uri.fsPath,
+    fileUri: document.uri.toString(),
     contents: document.getText(range),
     range: {
       start: {
@@ -108,7 +106,7 @@ function getCurrentlyHighlightedCode(
     const range = new vscode.Range(start, selection.end);
     const contents = editor.document.getText(range);
     return {
-      filepath: editor.document.uri.fsPath,
+      filepath: editor.document.uri.toString(),
       contents,
       range: {
         start: {
@@ -137,18 +135,18 @@ async function addHighlightedCodeToContext(
 }
 
 async function addEntireFileToContext(
-  filepath: vscode.Uri,
+  fileUri: vscode.Uri,
   edit: boolean,
   webviewProtocol: VsCodeWebviewProtocol | undefined,
 ) {
   // If a directory, add all files in the directory
-  const stat = await vscode.workspace.fs.stat(filepath);
+  const stat = await vscode.workspace.fs.stat(fileUri);
   if (stat.type === vscode.FileType.Directory) {
-    const files = await vscode.workspace.fs.readDirectory(filepath);
+    const files = await vscode.workspace.fs.readDirectory(fileUri);
     for (const [filename, type] of files) {
       if (type === vscode.FileType.File) {
         addEntireFileToContext(
-          vscode.Uri.joinPath(filepath, filename),
+          vscode.Uri.joinPath(fileUri, filename),
           edit,
           webviewProtocol,
         );
@@ -158,9 +156,9 @@ async function addEntireFileToContext(
   }
 
   // Get the contents of the file
-  const contents = (await vscode.workspace.fs.readFile(filepath)).toString();
+  const contents = (await vscode.workspace.fs.readFile(fileUri)).toString();
   const rangeInFileWithContents = {
-    filepath: filepath.fsPath,
+    fileUri: fileUri.toString(), // serialize
     contents: contents,
     range: {
       start: {
@@ -271,21 +269,21 @@ const commandsMap: (
   }
 
   return {
-    "continue.acceptDiff": async (newFilepath?: string | vscode.Uri) => {
+    "continue.acceptDiff": async (newFileUri?: vscode.Uri) => {
       captureCommandTelemetry("acceptDiff");
 
-      let fullPath = newFilepath;
+      // let fullPath = newFilepath;
 
-      if (fullPath instanceof vscode.Uri) {
-        fullPath = fullPath.fsPath;
-      } else if (fullPath) {
-        fullPath = getFullyQualifiedPath(ide, fullPath);
-      } else {
-        console.warn(`Unable to resolve filepath: ${newFilepath}`);
-      }
+      // if (fullPath instanceof vscode.Uri) {
+      //   fullPath = fullPath.fsPath;
+      // } else if (fullPath) {
+      //   fullPath = getFullyQualifiedPath(ide, fullPath);
+      // } else {
+      //   console.warn(`Unable to resolve filepath: ${newFilepath}`);
+      // }
 
-      verticalDiffManager.clearForFilepath(fullPath, true);
-      await diffManager.acceptDiff(fullPath);
+      verticalDiffManager.clearForFileUri(newFileUri, true);
+      await diffManager.acceptDiff(newFileUri);
 
       await sidebar.webviewProtocol.request("setEditStatus", {
         status: "done",
@@ -304,7 +302,7 @@ const commandsMap: (
         console.warn(`Unable to resolve filepath: ${newFilepath}`);
       }
 
-      verticalDiffManager.clearForFilepath(fullPath, false);
+      verticalDiffManager.clearForFileUri(fullPath, false);
       await diffManager.rejectDiff(fullPath);
       await sidebar.webviewProtocol.request("setEditStatus", {
         status: "done",
@@ -415,7 +413,7 @@ const commandsMap: (
         return;
       }
 
-      const existingDiff = await verticalDiffManager.getHandlerForFile(
+      const existingDiff = await verticalDiffManager.getHandlerForUri(
         editor.document.fileName,
       );
       if (!existingDiff) {

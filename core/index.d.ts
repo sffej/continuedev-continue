@@ -14,7 +14,7 @@ declare global {
       }[];
     };
     colorThemeName?: string;
-    workspacePaths?: string[];
+    workspaceUris?: string[];
     postIntellijMessage?: (
       messageType: string,
       data: any,
@@ -33,8 +33,8 @@ export interface ChunkWithoutID {
 
 export interface Chunk extends ChunkWithoutID {
   digest: string;
-  filepath: string;
-  index: number; // Index of the chunk in the document at filepath
+  uri: string;
+  index: number; // Index of the chunk in the document at uri
 }
 
 export interface IndexingProgressUpdate {
@@ -215,17 +215,17 @@ export interface SessionInfo {
 }
 
 export interface RangeInFile {
-  filepath: string;
+  uri: string;
   range: Range;
 }
 
 export interface Location {
-  filepath: string;
+  uri: string;
   position: Position;
 }
 
 export interface FileWithContents {
-  filepath: string;
+  uri: string;
   contents: string;
 }
 
@@ -238,7 +238,7 @@ export interface Position {
   character: number;
 }
 export interface FileEdit {
-  filepath: string;
+  uri: string;
   range: Range;
   replacement: string;
 }
@@ -414,7 +414,7 @@ export interface DiffLine {
 }
 
 export class Problem {
-  filepath: string;
+  uri: string;
   range: Range;
   message: string;
 }
@@ -443,7 +443,7 @@ export interface IndexTag extends BranchAndDir {
 }
 
 export enum FileType {
-  Unkown = 0,
+  Unknown = 0,
   File = 1,
   Directory = 2,
   SymbolicLink = 64,
@@ -474,38 +474,30 @@ export interface IDE {
   listFolders(): Promise<string[]>;
   getWorkspaceDirs(): Promise<string[]>;
   getWorkspaceConfigs(): Promise<ContinueRcJson[]>;
-  fileExists(filepath: string): Promise<boolean>;
-  writeFile(path: string, contents: string): Promise<void>;
+  fileExists(uri: string): Promise<boolean>;
+  writeFile(uri: string, contents: string): Promise<void>;
   showVirtualFile(title: string, contents: string): Promise<void>;
   getContinueDir(): Promise<string>;
-  openFile(path: string): Promise<void>;
+  openFile(uri: string): Promise<void>;
   runCommand(command: string): Promise<void>;
-  saveFile(filepath: string): Promise<void>;
-  readFile(filepath: string): Promise<string>;
-  readRangeInFile(filepath: string, range: Range): Promise<string>;
-  showLines(
-    filepath: string,
-    startLine: number,
-    endLine: number,
-  ): Promise<void>;
-  showDiff(
-    filepath: string,
-    newContents: string,
-    stepIndex: number,
-  ): Promise<void>;
+  saveFile(uri: string): Promise<void>;
+  readFile(uri: string): Promise<string>;
+  readRangeInFile(uri: string, range: Range): Promise<string>;
+  showLines(uri: string, startLine: number, endLine: number): Promise<void>;
+  showDiff(uri: string, newContents: string, stepIndex: number): Promise<void>;
   getOpenFiles(): Promise<string[]>;
   getCurrentFile(): Promise<
     | undefined
     | {
         isUntitled: boolean;
-        path: string;
+        uri: string;
         contents: string;
       }
   >;
   getPinnedFiles(): Promise<string[]>;
   getSearchResults(query: string): Promise<string>;
   subprocess(command: string, cwd?: string): Promise<[string, string]>;
-  getProblems(filepath?: string | undefined): Promise<Problem[]>;
+  getProblems(uri?: string | undefined): Promise<Problem[]>;
   getBranch(dir: string): Promise<string>;
   getTags(artifactId: string): Promise<IndexTag[]>;
   getRepoName(dir: string): Promise<string | undefined>;
@@ -514,16 +506,16 @@ export interface IDE {
     message: string,
     ...otherParams: any[]
   ): Promise<any>;
-  getGitRootPath(dir: string): Promise<string | undefined>;
+  getGitRootUri(dir: string): Promise<string | undefined>;
   listDir(dir: string): Promise<[string, FileType][]>;
-  getLastModified(files: string[]): Promise<{ [path: string]: number }>;
+  getLastModified(uris: string[]): Promise<{ [uri: string]: number }>;
   getGitHubAuthToken(args: GetGhTokenArgs): Promise<string | undefined>;
 
   // LSP
   gotoDefinition(location: Location): Promise<RangeInFile[]>;
 
   // Callbacks
-  onDidChangeActiveTextEditor(callback: (filepath: string) => void): void;
+  onDidChangeActiveTextEditor(callback: (dir: string) => void): void;
   pathSep(): Promise<string>;
 }
 

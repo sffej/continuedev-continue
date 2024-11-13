@@ -299,7 +299,7 @@ export async function rejectSuggestionCommand(
 }
 
 export async function showSuggestion(
-  editorFilename: string,
+  editorFileUri: vscode.Uri,
   range: vscode.Range,
   suggestion: string,
 ): Promise<boolean> {
@@ -312,7 +312,7 @@ export async function showSuggestion(
     return Promise.resolve(false);
   }
 
-  const editor = await openEditorAndRevealRange(editorFilename, range);
+  const editor = await openEditorAndRevealRange(editorFileUri, range);
   if (!editor) {
     return Promise.resolve(false);
   }
@@ -339,19 +339,19 @@ export async function showSuggestion(
             );
             const content = editor!.document.getText(suggestionRange);
 
-            const filename = editor!.document.uri.toString();
-            if (editorToSuggestions.has(filename)) {
-              const suggestions = editorToSuggestions.get(filename)!;
+            const fileUri = editor!.document.uri.toString();
+            if (editorToSuggestions.has(fileUri)) {
+              const suggestions = editorToSuggestions.get(fileUri)!;
               suggestions.push({
                 oldRange: range,
                 newRange: suggestionRange,
                 newSelected: true,
                 newContent: content,
               });
-              editorToSuggestions.set(filename, suggestions);
-              currentSuggestion.set(filename, suggestions.length - 1);
+              editorToSuggestions.set(fileUri, suggestions);
+              currentSuggestion.set(fileUri, suggestions.length - 1);
             } else {
-              editorToSuggestions.set(filename, [
+              editorToSuggestions.set(fileUri, [
                 {
                   oldRange: range,
                   newRange: suggestionRange,
@@ -359,10 +359,10 @@ export async function showSuggestion(
                   newContent: content,
                 },
               ]);
-              currentSuggestion.set(filename, 0);
+              currentSuggestion.set(fileUri, 0);
             }
 
-            rerenderDecorations(filename);
+            rerenderDecorations(fileUri);
           }
           resolve(success);
         },

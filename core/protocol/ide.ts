@@ -49,11 +49,17 @@ export type ToIdeFromWebviewOrCoreProtocol = {
   ];
   getProblems: [{ filepath: string }, Problem[]];
   getOpenFiles: [undefined, string[]];
-  getCurrentFile: [undefined, undefined | {
-    isUntitled: boolean;
-    path: string;
-    contents: string;
-  }];
+  getCurrentFile: [
+    undefined,
+    (
+      | undefined
+      | {
+          isUntitled: boolean;
+          path: string;
+          contents: string;
+        }
+    ),
+  ];
   getPinnedFiles: [undefined, string[]];
   showLines: [{ filepath: string; startLine: number; endLine: number }, void];
   readRangeInFile: [{ filepath: string; range: Range }, string];
@@ -81,7 +87,7 @@ export type ToIdeFromWebviewOrCoreProtocol = {
     Parameters<IDE["showToast"]>,
     Awaited<ReturnType<IDE["showToast"]>>,
   ];
-  getGitRootPath: [{ dir: string }, string | undefined];
+  getGitRootUri: [{ dir: string }, string | undefined];
   listDir: [{ dir: string }, [string, FileType][]];
   getLastModified: [{ files: string[] }, { [path: string]: number }];
 

@@ -10,7 +10,7 @@ export type ToIdeFromWebviewProtocol = ToIdeFromWebviewOrCoreProtocol & {
     {
       windowId: string;
       serverUrl: string;
-      workspacePaths: string[];
+      workspaceUris: string[];
       vscMachineId: string;
       vscMediaUrl: string;
     },
@@ -23,12 +23,12 @@ export type ToIdeFromWebviewProtocol = ToIdeFromWebviewOrCoreProtocol & {
       text: string;
       streamId: string;
       curSelectedModelTitle: string;
-      filepath?: string;
+      fileUri?: string;
     },
     void,
   ];
   showTutorial: [undefined, void];
-  showFile: [{ filepath: string }, void];
+  showFile: [{ fileUri: string }, void];
   openConfigJson: [undefined, void];
   toggleDevTools: [undefined, void];
   reloadWindow: [undefined, void];
@@ -39,14 +39,14 @@ export type ToIdeFromWebviewProtocol = ToIdeFromWebviewOrCoreProtocol & {
   "jetbrains/editorInsetHeight": [{ height: number }, void];
   "vscode/openMoveRightMarkdown": [undefined, void];
   setGitHubAuthToken: [{ token: string }, void];
-  acceptDiff: [{ filepath: string }, void];
-  rejectDiff: [{ filepath: string }, void];
+  acceptDiff: [{ fileUri: string }, void];
+  rejectDiff: [{ fileUri: string }, void];
   "edit/sendPrompt": [
     { prompt: MessageContent; range: RangeInFileWithContents },
     void,
   ];
   "edit/acceptReject": [
-    { accept: boolean; onlyFirst: boolean; filepath: string },
+    { accept: boolean; onlyFirst: boolean; fileUri: string },
     void,
   ];
   "edit/escape": [undefined, void];
@@ -62,7 +62,7 @@ export interface ApplyState {
   streamId: string;
   status?: "streaming" | "done" | "closed";
   numDiffs?: number;
-  filepath?: string;
+  fileUri?: string;
 }
 
 export type ToWebviewFromIdeProtocol = ToWebviewFromIdeOrCoreProtocol & {

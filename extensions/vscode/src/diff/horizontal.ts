@@ -91,24 +91,29 @@ export class DiffManager {
   }
 
   private async openDiffEditor(
-    originalFilepath: string,
-    newFilepath: string,
+    originalFileUri: vscode.Uri,
+    newFileUri: vscode.Uri,
   ): Promise<vscode.TextEditor | undefined> {
     // If the file doesn't yet exist or the basename is a single digit number (vscode terminal), don't open the diff editor
     try {
-      await vscode.workspace.fs.stat(uriFromFilePath(newFilepath));
+      await vscode.workspace.fs.stat(newFileUri);
     } catch (e) {
       console.log("File doesn't exist, not opening diff editor", e);
       return undefined;
     }
-    if (path.basename(originalFilepath).match(/^\d$/)) {
-      return undefined;
-    }
 
-    const rightUri = uriFromFilePath(newFilepath);
-    const leftUri = uriFromFilePath(originalFilepath);
+    // Skip files with numbers in the names?
+    // if (path.basename(originalPath).match(/^\d$/)) {
+    //   return undefined;
+    // }
+
     const title = "Continue Diff";
-    vscode.commands.executeCommand("vscode.diff", leftUri, rightUri, title);
+    vscode.commands.executeCommand(
+      "vscode.diff",
+      originalFileUri,
+      newFileUri,
+      title,
+    );
 
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
@@ -245,7 +250,7 @@ export class DiffManager {
     return undefined;
   }
 
-  async acceptDiff(newFilepath?: string) {
+  async acceptDiff(newFileUri?: vscode.Uri) {
     // When coming from a keyboard shortcut, we have to infer the newFilepath from visible text editors
     if (!newFilepath) {
       newFilepath = this.inferNewFilepath();

@@ -28,7 +28,7 @@ export class MessageIde implements IDE {
       messageType: T,
       callback: (data: FromIdeProtocol[T][0]) => FromIdeProtocol[T][1],
     ) => void,
-  ) { }
+  ) {}
 
   pathSep(): Promise<string> {
     return this.request("pathSep", undefined);
@@ -52,8 +52,8 @@ export class MessageIde implements IDE {
   getLastModified(files: string[]): Promise<{ [path: string]: number }> {
     return this.request("getLastModified", { files });
   }
-  getGitRootPath(dir: string): Promise<string | undefined> {
-    return this.request("getGitRootPath", { dir });
+  getGitRootUri(dir: string): Promise<string | undefined> {
+    return this.request("getGitRootUri", { dir });
   }
   listDir(dir: string): Promise<[string, FileType][]> {
     return this.request("listDir", { dir });

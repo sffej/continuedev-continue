@@ -17,7 +17,6 @@ import { getModelQuickPickVal } from "./ModelSelectionQuickPick";
 // @ts-ignore - error finding typings
 // @ts-ignore
 
-
 /**
  * Used to track what action to take after a user interacts
  * with the initial Quick Pick
@@ -132,7 +131,7 @@ export class QuickEdit {
       return;
     }
 
-    const hasChanges = !!this.verticalDiffManager.getHandlerForFile(
+    const hasChanges = !!this.verticalDiffManager.getHandlerForUri(
       editor.document.uri.fsPath,
     );
 
@@ -248,7 +247,7 @@ export class QuickEdit {
   };
 
   private setActiveEditorAndPrevInput(editor: vscode.TextEditor) {
-    const existingHandler = this.verticalDiffManager.getHandlerForFile(
+    const existingHandler = this.verticalDiffManager.getHandlerForUri(
       editor.document.uri.fsPath ?? "",
     );
 

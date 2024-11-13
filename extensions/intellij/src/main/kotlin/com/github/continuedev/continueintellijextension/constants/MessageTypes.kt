@@ -40,7 +40,7 @@ class MessageTypes {
             "getIdeSettings",
             "getRepoName",
             "listDir",
-            "getGitRootPath",
+            "getGitRootUri",
             "getLastModified",
             "insertAtCursor",
             "applyToFile",

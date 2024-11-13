@@ -29,7 +29,7 @@ class ContinuePluginService(project: Project) : Disposable, DumbAware {
     val coreMessenger: CoreMessenger?
         get() = coreMessengerManager?.coreMessenger
 
-    var workspacePaths: Array<String>? = null
+    var workspaceUris: Array<String>? = null
     var windowId: String = UUID.randomUUID().toString()
 
     override fun dispose() {

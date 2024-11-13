@@ -1,5 +1,4 @@
-import * as path from "node:path";
-
+// import * as path from "node:path";
 import { machineIdSync } from "node-machine-id";
 import * as vscode from "vscode";
 
@@ -26,14 +25,12 @@ export function getExtensionUri(): vscode.Uri {
   return vscode.extensions.getExtension("Continue.continue")!.extensionUri;
 }
 
-export function getViewColumnOfFile(
-  filepath: string,
-): vscode.ViewColumn | undefined {
+function getViewColumnOfFile(uri: vscode.Uri): vscode.ViewColumn | undefined {
   for (const tabGroup of vscode.window.tabGroups.all) {
     for (const tab of tabGroup.tabs) {
       if (
         (tab?.input as any)?.uri &&
-        (tab.input as any).uri.fsPath === filepath
+        (tab.input as any).uri.toString() === uri.toString()
       ) {
         return tabGroup.viewColumn;
       }
@@ -42,49 +39,42 @@ export function getViewColumnOfFile(
   return undefined;
 }
 
-export function getRightViewColumn(): vscode.ViewColumn {
-  // When you want to place in the rightmost panel if there is already more than one, otherwise use Beside
-  let column = vscode.ViewColumn.Beside;
-  const columnOrdering = [
-    vscode.ViewColumn.One,
-    vscode.ViewColumn.Beside,
-    vscode.ViewColumn.Two,
-    vscode.ViewColumn.Three,
-    vscode.ViewColumn.Four,
-    vscode.ViewColumn.Five,
-    vscode.ViewColumn.Six,
-    vscode.ViewColumn.Seven,
-    vscode.ViewColumn.Eight,
-    vscode.ViewColumn.Nine,
-  ];
-  for (const tabGroup of vscode.window.tabGroups.all) {
-    if (
-      columnOrdering.indexOf(tabGroup.viewColumn) >
-      columnOrdering.indexOf(column)
-    ) {
-      column = tabGroup.viewColumn;
-    }
-  }
-  return column;
-}
+// export function getRightViewColumn(): vscode.ViewColumn {
+//   // When you want to place in the rightmost panel if there is already more than one, otherwise use Beside
+//   let column = vscode.ViewColumn.Beside;
+//   const columnOrdering = [
+//     vscode.ViewColumn.One,
+//     vscode.ViewColumn.Beside,
+//     vscode.ViewColumn.Two,
+//     vscode.ViewColumn.Three,
+//     vscode.ViewColumn.Four,
+//     vscode.ViewColumn.Five,
+//     vscode.ViewColumn.Six,
+//     vscode.ViewColumn.Seven,
+//     vscode.ViewColumn.Eight,
+//     vscode.ViewColumn.Nine,
+//   ];
+//   for (const tabGroup of vscode.window.tabGroups.all) {
+//     if (
+//       columnOrdering.indexOf(tabGroup.viewColumn) >
+//       columnOrdering.indexOf(column)
+//     ) {
+//       column = tabGroup.viewColumn;
+//     }
+//   }
+//   return column;
+// }
 
 let showTextDocumentInProcess = false;
 
 export function openEditorAndRevealRange(
-  editorFilename: string,
+  editorFileUri: vscode.Uri,
   range?: vscode.Range,
   viewColumn?: vscode.ViewColumn,
   preview?: boolean,
 ): Promise<vscode.TextEditor> {
   return new Promise((resolve, _) => {
-    let filename = editorFilename;
-    if (editorFilename.startsWith("~")) {
-      filename = path.join(
-        process.env.HOME || process.env.USERPROFILE || "",
-        editorFilename.slice(1),
-      );
-    }
-    vscode.workspace.openTextDocument(filename).then(async (doc) => {
+    vscode.workspace.openTextDocument(editorFileUri).then(async (doc) => {
       try {
         // An error is thrown mysteriously if you open two documents in parallel, hence this
         while (showTextDocumentInProcess) {
@@ -97,7 +87,7 @@ export function openEditorAndRevealRange(
         showTextDocumentInProcess = true;
         vscode.window
           .showTextDocument(doc, {
-            viewColumn: getViewColumnOfFile(editorFilename) || viewColumn,
+            viewColumn: getViewColumnOfFile(editorFileUri) || viewColumn,
             preview,
           })
           .then((editor) => {
@@ -114,46 +104,46 @@ export function openEditorAndRevealRange(
   });
 }
 
-function windowsToPosix(windowsPath: string): string {
-  let posixPath = windowsPath.split("\\").join("/");
-  if (posixPath[1] === ":") {
-    posixPath = posixPath.slice(2);
-  }
-  // posixPath = posixPath.replace(" ", "\\ ");
-  return posixPath;
-}
+// function windowsToPosix(windowsPath: string): string {
+//   let posixPath = windowsPath.split("\\").join("/");
+//   if (posixPath[1] === ":") {
+//     posixPath = posixPath.slice(2);
+//   }
+//   // posixPath = posixPath.replace(" ", "\\ ");
+//   return posixPath;
+// }
 
-function isWindowsLocalButNotRemote(): boolean {
-  return (
-    vscode.env.remoteName !== undefined &&
-    [
-      "wsl",
-      "ssh-remote",
-      "dev-container",
-      "attached-container",
-      "tunnel",
-    ].includes(vscode.env.remoteName) &&
-    process.platform === "win32"
-  );
-}
+// function isWindowsLocalButNotRemote(): boolean {
+//   return (
+//     vscode.env.remoteName !== undefined &&
+//     [
+//       "wsl",
+//       "ssh-remote",
+//       "dev-container",
+//       "attached-container",
+//       "tunnel",
+//     ].includes(vscode.env.remoteName) &&
+//     process.platform === "win32"
+//   );
+// }
 
-export function getPathSep(): string {
-  return isWindowsLocalButNotRemote() ? "/" : path.sep;
-}
+// export function getPathSep(): string {
+//   return isWindowsLocalButNotRemote() ? "/" : path.sep;
+// }
 
-export function uriFromFilePath(filepath: string): vscode.Uri {
-  let finalPath = filepath;
-  if (vscode.env.remoteName) {
-    if (isWindowsLocalButNotRemote()) {
-      finalPath = windowsToPosix(filepath);
-    }
-    return vscode.Uri.parse(
-      `vscode-remote://${vscode.env.remoteName}${finalPath}`,
-    );
-  } else {
-    return vscode.Uri.file(finalPath);
-  }
-}
+// export function uriFromFilePath(filepath: string): vscode.Uri {
+//   let finalPath = filepath;
+//   if (vscode.env.remoteName) {
+//     if (isWindowsLocalButNotRemote()) {
+//       finalPath = windowsToPosix(filepath);
+//     }
+//     return vscode.Uri.parse(
+//       `vscode-remote://${vscode.env.remoteName}${finalPath}`,
+//     );
+//   } else {
+//     return vscode.Uri.file(finalPath);
+//   }
+// }
 
 export function getUniqueId() {
   const id = vscode.env.machineId;
