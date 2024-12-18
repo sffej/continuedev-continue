@@ -248,14 +248,19 @@ jobs:
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
           echo -e "Host ssh-test-container\n\tHostName $SSH_HOST\n\tUser ec2-user\n\tIdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
 
-      - name: Install Xvfb for Linux and run e2e tests
+      - name: Package extension in Xvfb environment
         run: |
-          # sudo apt-get install -y xvfb # Install Xvfb
-          Xvfb :99 & # Start Xvfb
-          export DISPLAY=:99 # Export the display number to the environment
+          Xvfb :99 &
+          export DISPLAY=:99
           cd extensions/vscode
           npm run package
+
+      - name: Run e2e tests
+        run: |
+          cd extensions/vscode
           npm run e2e:ci:run
+        env:
+          DISPLAY: :99
 
       - name: Upload e2e test screenshots
         if: failure()
