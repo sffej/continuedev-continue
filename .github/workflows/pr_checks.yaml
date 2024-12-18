@@ -290,7 +290,7 @@ jobs:
       - name: Run e2e tests
         run: |
           cd extensions/vscode
-          npm run test:e2e:ci -- ${{ matrix.test_file }}
+          npm run e2e:ci:run -- ${{ matrix.test_file }}
 
         env:
           DISPLAY: :99
