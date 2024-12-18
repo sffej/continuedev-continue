@@ -291,6 +291,7 @@ jobs:
       - name: Run e2e tests
         run: |
           cd extensions/vscode
+          echo "NAME ZZZ: ${{  matrix.test_file }}"
           npm run e2e:ci:run -- ${{ matrix.test_file }}
 
         env:
