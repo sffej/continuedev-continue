@@ -331,20 +331,20 @@ jobs:
           path: gui/node_modules
           key: ${{ runner.os }}-gui-node-modules-${{ hashFiles('gui/package-lock.json') }}
 
-      - name: Build GUI
-        run: |
-          cd gui
-          npm ci 
-          npm run build
-
-      # - name: Run prepackage script
+      # - name: Build GUI
       #   run: |
-      #     cd extensions/vscode
+      #     cd gui
       #     npm ci
-      #     npm run prepackage
-      #   env:
-      #     # https://github.com/microsoft/vscode-ripgrep/issues/9#issuecomment-643965333
-      #     GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+      #     npm run build
+
+      - name: Run prepackage script
+        run: |
+          cd extensions/vscode
+          npm ci
+          npm run prepackage
+        env:
+          # https://github.com/microsoft/vscode-ripgrep/issues/9#issuecomment-643965333
+          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
       - uses: actions/cache@v4
         id: binary-cache
