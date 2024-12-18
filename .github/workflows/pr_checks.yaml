@@ -225,9 +225,12 @@ jobs:
           npm run e2e:compile
           cd ../..
           FILES=$(ls -1 extensions/vscode/e2e/_output/tests/*.test.js | jq -R . | jq -s .)
-          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "test_files<<EOF" >> $GITHUB_OUTPUT
           echo "$FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+      - name: Debug Outputs
+        run: |
+          echo "Test files: ${{ needs.get-test-files.outputs.test_files }}"
 
   vscode-tests:
     needs: [get-test-files, vscode-checks, core-checks]
