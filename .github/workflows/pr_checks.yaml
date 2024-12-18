@@ -233,14 +233,9 @@ jobs:
         run: |
           echo "Test files: ${{ steps.get-test-files.outputs.test_files }}"
 
-  vscode-tests:
-    name: ${{  matrix.test_file }}"
-    needs: [get-test-files, vscode-checks, core-checks]
+  setup-test-environment:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        test_file: ${{ fromJson(needs.get-test-files.outputs.test_files) }}
+    needs: [get-test-files, vscode-checks, core-checks]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -289,12 +284,39 @@ jobs:
           cd extensions/vscode
           npm run package
 
+      - name: Upload prepared environment
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-environment
+          path: |
+            ~/.ssh/
+            extensions/vscode/
+            core/
+
+  vscode-tests:
+    name: ${{ matrix.test_file }}
+    needs: [setup-test-environment, get-test-files]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test_file: ${{ fromJson(needs.get-test-files.outputs.test_files) }}
+    steps:
+      - name: Download prepared environment
+        uses: actions/download-artifact@v4
+        with:
+          name: test-environment
+
+      - name: Restore file permissions
+        run: |
+          chmod 600 ~/.ssh/id_rsa
+          chmod -R +x extensions/vscode/node_modules/.bin/
+
       - name: Run e2e tests
         run: |
+          Xvfb :99 &
           cd extensions/vscode
-          echo "NAME ZZZ: ${{  matrix.test_file }}"
           TEST_FILE="${{ matrix.test_file }}" npm run e2e:ci:run
-
         env:
           DISPLAY: :99
 
