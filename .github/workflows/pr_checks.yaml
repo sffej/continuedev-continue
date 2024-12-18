@@ -234,6 +234,7 @@ jobs:
           echo "Test files: ${{ steps.get-test-files.outputs.test_files }}"
 
   vscode-tests:
+    name: ${{  matrix.test_file }}"
     needs: [get-test-files, vscode-checks, core-checks]
     runs-on: ubuntu-latest
     strategy:
