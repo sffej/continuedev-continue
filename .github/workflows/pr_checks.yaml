@@ -153,19 +153,22 @@ jobs:
       test_files: ${{ steps.get_test_files.outputs.test_files }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: extensions/vscode/node_modules
+          key: ${{ runner.os }}-vscode-node-modules-${{ hashFiles('extensions/vscode/package-lock.json') }}
+
       - name: Get test files
         id: get-test-files
-        runs: |
+        run: |
           cd extensions/vscode
           npm ci
           npm run e2e:compile
           cd ../..
           FILES=$(ls -1 extensions/vscode/e2e/_output/tests/*.test.js | jq -R . | jq -s .)
           echo "files=$FILES" >> $GITHUB_OUTPUT
-        uses: actions/cache@v3
-        with:
-          path: extensions/vscode/node_modules
-          key: ${{ runner.os }}-vscode-node-modules-${{ hashFiles('extensions/vscode/package-lock.json') }}
 
   vscode-checks:
     needs: [install-root, core-checks]
