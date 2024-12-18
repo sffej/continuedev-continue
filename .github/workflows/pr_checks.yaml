@@ -248,6 +248,12 @@ jobs:
           path: extensions/vscode/node_modules
           key: ${{ runner.os }}-vscode-node-modules-${{ hashFiles('extensions/vscode/package-lock.json') }}
 
+      - uses: actions/cache@v4
+        id: core-node-modules-cache
+        with:
+          path: core/node_modules
+          key: ${{ runner.os }}-core-node-modules-${{ hashFiles('core/package-lock.json') }}
+
       - name: Package extension
         run: |
           cd extensions/vscode
@@ -278,12 +284,6 @@ jobs:
         with:
           path: extensions/vscode/node_modules
           key: ${{ runner.os }}-vscode-node-modules-${{ hashFiles('extensions/vscode/package-lock.json') }}
-
-      - uses: actions/cache@v4
-        id: core-node-modules-cache
-        with:
-          path: core/node_modules
-          key: ${{ runner.os }}-core-node-modules-${{ hashFiles('core/package-lock.json') }}
 
       - uses: actions/cache@v4
         id: storage-cache
