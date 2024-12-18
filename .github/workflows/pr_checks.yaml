@@ -156,8 +156,11 @@ jobs:
       - name: Get list of test files
         id: get_test_files
         run: |
+          cd extensions/vscode
+          npm run e2e:compile
+          cd ../..
           FILES=$(ls -1 extensions/vscode/e2e/_output/tests/*.test.js | jq -R . | jq -s .)
-          echo "test_files=$FILES" >> $GITHUB_OUTPUT
+          echo "files=$FILES" >> $GITHUB_OUTPUT
 
   vscode-checks:
     needs: [install-root, core-checks]
