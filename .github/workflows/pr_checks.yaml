@@ -337,14 +337,14 @@ jobs:
           npm ci 
           npm run build
 
-      - name: Run prepackage script
-        run: |
-          cd extensions/vscode
-          npm ci
-          npm run prepackage
-        env:
-          # https://github.com/microsoft/vscode-ripgrep/issues/9#issuecomment-643965333
-          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+      # - name: Run prepackage script
+      #   run: |
+      #     cd extensions/vscode
+      #     npm ci
+      #     npm run prepackage
+      #   env:
+      #     # https://github.com/microsoft/vscode-ripgrep/issues/9#issuecomment-643965333
+      #     GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
       - uses: actions/cache@v4
         id: binary-cache
