@@ -155,7 +155,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Get test files
         id: get-test-files
-        needs: [vscode-checks]
         runs: |
           cd extensions/vscode
           npm ci
