@@ -293,7 +293,7 @@ jobs:
         run: |
           cd extensions/vscode
           echo "NAME ZZZ: ${{  matrix.test_file }}"
-          npm run e2e:ci:run -- ${{ matrix.test_file }}
+          TEST_FILE="${{ matrix.test_file }}" npm run e2e:ci:run
 
         env:
           DISPLAY: :99
