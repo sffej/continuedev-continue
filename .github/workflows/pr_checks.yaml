@@ -217,17 +217,18 @@ jobs:
         with:
           path: extensions/vscode/node_modules
           key: ${{ runner.os }}-vscode-node-modules-${{ hashFiles('extensions/vscode/package-lock.json') }}
+
       - name: Get test files
         id: get-test-files
         run: |
           cd extensions/vscode
           npm ci
           npm run e2e:compile
-          cd ../..
-          FILES=$(ls -1 extensions/vscode/e2e/_output/tests/*.test.js | jq -R . | jq -s .)
+          FILES=$(ls -1 e2e/_output/tests/*.test.js | jq -R . | jq -s .)
           echo "test_files<<EOF" >> $GITHUB_OUTPUT
           echo "$FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Debug Outputs
         run: |
           echo "Test files: ${{ steps.get-test-files.outputs.test_files }}"
